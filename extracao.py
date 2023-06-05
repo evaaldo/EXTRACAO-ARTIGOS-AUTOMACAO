@@ -18,19 +18,44 @@ if(response.status_code == 200):
     anos = []
     fasciculos = []
     titulos = []
+    citacoes = []
 
     #Informações buscadas
     ano = soup.find('span', class_='_editionMeta')
     fasciculo = soup.find('span', class_='_editionMeta')
     tituloIngles = soup.find('h1', class_='article-title')
     tituloPortugues = soup.find('h2', class_='article-title')
+    citacaoLista = soup.find_all('ul', class_='refList')
 
     #Isso tudo deve estar dentro de um loop
+    #LOOP AQUI!!
 
+    #Extração de textos
     ano_conteudo = ano.text.strip()
     fasciculo_conteudo = fasciculo.text.strip()
     tituloIngles_conteudo = tituloIngles.text.strip()
     tituloPortugues_conteudo = tituloPortugues.text.strip()
+
+    #loop necessário para capturar o número de informações, porém ainda faz parte da etapa de extração de textos
+    #Checa cada <li> dentro da <ul>
+    for citacao in citacaoLista:
+        #identifica as tags <li>
+        tags_li = citacao.find_all('li')
+
+        #Verifica se há tags <li>
+        if tags_li:
+            #Indica qual a última tag <li>
+            ultima_tag_li = tags_li[-1]
+
+            #Indica a tag <sup> dentro da última tag <li>
+            tag_sup = ultima_tag_li.find('sup')
+
+            #Verifica se há uma tag <sup>
+            if tag_sup:
+                #Indica o valor da última tag <sup>, ou seja, o número de citações
+                num_citacoes = int(tag_sup.text.strip())
+
+    
 
     #Códigos para informações que precisam de padrão Regex
     padrao_fasciculo = re.compile(r'\((.*?)\)')
@@ -50,9 +75,9 @@ if(response.status_code == 200):
     else:
         titulos.append(tituloPortugues_conteudo)
     
+    citacoes.append(num_citacoes)
     
-
-    print("Conectou legal")
-    print(anos)
-    print(fasciculos)
-    print(titulos)
+    print("Lista de anos:", anos)
+    print("Lista de fascículos:", fasciculos)
+    print("Lista de títulos:", titulos)
+    print("Lista de citações:", citacoes)
