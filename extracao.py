@@ -27,6 +27,7 @@ if(response.status_code == 200):
     citacoes = []
     nomesPrimeiroAutor = []
     nomesCorrespondenteAutor = []
+    paisesPrimeiroAutor = []
 
     #Informações buscadas com BeatifulSoup
     ano = soup.find('span', class_='_editionMeta')
@@ -34,8 +35,8 @@ if(response.status_code == 200):
     tituloIngles = soup.find('h1', class_='article-title')
     tituloPortugues = soup.find('h2', class_='article-title')
     citacaoLista = soup.find_all('ul', class_='refList')
-    autorPrincipalDiv = soup.find('div', class_='tutors')
-    autorPrincipal = autorPrincipalDiv.find('strong')
+    autoresDiv = soup.find('div', class_='tutors')
+    autorPrincipal = autoresDiv.find('strong')
     autorCorrespondenteDiv = soup.find('ul', class_='footnote')
     autorCorrespondente = autorCorrespondenteDiv.find('li')
 
@@ -49,6 +50,18 @@ if(response.status_code == 200):
     tituloPortugues_conteudo = tituloPortugues.text.strip()
     autorPrincipal_conteudo = autorPrincipal.text.strip()
     autorCorrespondente_conteudo = autorCorrespondente.text.strip()
+
+    if autoresDiv:
+        # Extração do texto 
+        paisPrimeiroAutor = autoresDiv.get_text(separator=',')
+
+        # Divide o texto pelo separador vírgula
+        partes = paisPrimeiroAutor.split(',')
+
+        # Verifica se existem pelo menos duas partes separadas por vírgula
+        if len(partes) >= 2:
+            # Obtém o texto após a penúltima parte
+            paisPrimeiroAutor_conteudo = ','.join(partes[-8:-5])
 
     #loop necessário para capturar o número de informações, porém ainda faz parte da etapa de extração de textos
     #Checa cada <li> dentro da <ul>
@@ -88,6 +101,7 @@ if(response.status_code == 200):
     fasciculos.append(fasciculo_conteudo)
     nomesPrimeiroAutor.append(autorPrincipal_conteudo)
     nomesCorrespondenteAutor.append(autorCorrespondente_conteudo)
+    paisesPrimeiroAutor.append(paisPrimeiroAutor_conteudo)
 
     #Condicional necessária para os títulos, porém ainda faz parte da etapa de armazenamento
     if(tituloPortugues_conteudo == ''):
@@ -103,3 +117,4 @@ if(response.status_code == 200):
     print("Lista de citações:", citacoes)
     print("Lista de nomes de primeiro autor:", nomesPrimeiroAutor)
     print("Lista de nomes de autor correspondente:", nomesCorrespondenteAutor)
+    print("Lista de países de primeiro autor:", paisesPrimeiroAutor)
