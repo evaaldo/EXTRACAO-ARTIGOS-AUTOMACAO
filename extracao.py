@@ -1,15 +1,9 @@
 from bs4 import BeautifulSoup
 import requests
 import re
-from selenium import webdriver
-from selenium.webdriver.common.action_chains import ActionChains
-
-# #Inicializa o driver do Selenium
-# driver = webdriver.Chrome(executable_path=r'./chromedriver.exe')
-# driver.get("https://www.scielo.br/j/anp/a/z9dRGTnDrPgjWkS7cvgyLHw/?format=html&lang=en&stop=previous")
 
 #URL da página da Scielo
-URL = "https://www.scielo.br/j/anp/a/YNp5dkZn7ckhbSWXv7bcSwv/?lang=pt"
+URL = "https://www.scielo.br/j/anp/a/cwBqPFyzPZMSpDN6bcZg5Yj/?lang=en"
 
 #Acessando a página por meio da requisição HTTP
 response = requests.get(URL)
@@ -26,7 +20,7 @@ if(response.status_code == 200):
     titulos = []
     # citacoes = []
     nomesPrimeiroAutor = []
-    # nomesCorrespondenteAutor = []
+    nomesCorrespondenteAutor = []
     paisesPrimeiroAutor = []
 
     #Informações buscadas com BeatifulSoup
@@ -37,8 +31,27 @@ if(response.status_code == 200):
     citacaoLista = soup.find_all('ul', class_='refList')
     autoresDiv = soup.find('div', class_='tutors')
     autorPrincipal = autoresDiv.find('strong')
-    # autorCorrespondenteDiv = soup.find('ul', class_='footnote')
-    # # autorCorrespondente = autorCorrespondenteDiv.find('li')
+    autorCorrespondenteDiv = soup.find('ul', class_='footnote')
+
+    #Extração completa do autor correspondente, caso ele exista
+    if(autorCorrespondenteDiv):
+        #Identifica o item de uma lista
+        autorCorrespondente = autorCorrespondenteDiv.find('li')
+
+        #Extrai o texto do item identificado
+        autorCorrespondente_conteudo = autorCorrespondente.text.strip()
+
+        #Determina padrão de texto a ser buscado
+        padrao_autorCorrespondente = r'Address for correspondence (.+?) \(email'
+
+        #Busca valor esperado
+        autorCorrespondente_conteudo = re.findall(padrao_autorCorrespondente, autorCorrespondente_conteudo)
+        autorCorrespondente_conteudo = autorCorrespondente_conteudo[0].strip()
+        autorCorrespondente_conteudo = autorCorrespondente_conteudo.replace(',', '')
+
+        #Armazena valor caso exista
+        nomesCorrespondenteAutor.append(autorCorrespondente_conteudo)
+
 
     #Isso tudo deve estar dentro de um loop
     #LOOP AQUI!!
@@ -49,7 +62,6 @@ if(response.status_code == 200):
     tituloIngles_conteudo = tituloIngles.text.strip()
     tituloPortugues_conteudo = tituloPortugues.text.strip()
     autorPrincipal_conteudo = autorPrincipal.text.strip()
-    # # autorCorrespondente_conteudo = autorCorrespondente.text.strip()
 
     if autoresDiv:
         # Extração do texto 
@@ -86,21 +98,17 @@ if(response.status_code == 200):
 
     #Códigos para informações que precisam de padrão Regex
     padrao_fasciculo = re.compile(r'\((.*?)\)')
-    # padrao_autorCorrespondente = r'Address for correspondence (.+?) \(email'
-
+    
     #Valor esperado
     ano_conteudo = ano_conteudo.split("•")[-1].strip()
+    ano_conteudo = ano_conteudo[-4:]
     fasciculo_conteudo = re.findall(padrao_fasciculo, fasciculo_conteudo)
     fasciculo_conteudo = fasciculo_conteudo[0].strip()
-    # # # autorCorrespondente_conteudo = re.findall(padrao_autorCorrespondente, autorCorrespondente_conteudo)
-    # # autorCorrespondente_conteudo = autorCorrespondente_conteudo[0].strip()
-    # # autorCorrespondente_conteudo = autorCorrespondente_conteudo.replace(',', '')
     
     #Armazenamento
     anos.append(ano_conteudo)
     fasciculos.append(fasciculo_conteudo)
     nomesPrimeiroAutor.append(autorPrincipal_conteudo)
-    # # nomesCorrespondenteAutor.append(autorCorrespondente_conteudo)
     paisesPrimeiroAutor.append(paisPrimeiroAutor_conteudo)
 
     #Condicional necessária para os títulos, porém ainda faz parte da etapa de armazenamento
@@ -116,5 +124,5 @@ if(response.status_code == 200):
     print("Lista de títulos:", titulos)
     # print("Lista de citações:", citacoes)
     print("Lista de nomes de primeiro autor:", nomesPrimeiroAutor)
-    # # print("Lista de nomes de autor correspondente:", nomesCorrespondenteAutor)
+    print("Lista de nomes de autor correspondente:", nomesCorrespondenteAutor)
     print("Lista de países de primeiro autor:", paisesPrimeiroAutor)
