@@ -43,6 +43,7 @@ def extraction():
         tituloPortugues = soup.find('h2', class_='article-title').text.strip() if soup.find('h2', class_='article-title') else ''
 
         autorPrincipal = soup.find('div', class_='tutors').find('strong').text.strip()
+        autorCorrespondente = autorPrincipal[-1]
 
         autoresDiv = soup.find('div', class_='tutors')
         autorCorrespondenteDiv = soup.find('ul', class_='footnote')
@@ -64,7 +65,7 @@ def extraction():
             correspondencia_email = re.findall(padrao_correspondencia_email, autorCorrespondente_conteudo)
             correspondencia = re.findall(padrao_correspondencia, autorCorrespondente_conteudo)
 
-            texto_correspondencia = correspondencia_email[0] if correspondencia_email else correspondencia[0] if correspondencia else None
+            texto_correspondencia = correspondencia_email[0] if correspondencia_email else correspondencia[0] if correspondencia else autorCorrespondente_conteudo
 
             if texto_correspondencia:
                 nomesCorrespondenteAutor.append(texto_correspondencia.strip())
