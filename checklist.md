@@ -1,4 +1,4 @@
 Pendencias do código:
-- O número de citações só é capturado para aqueles artigos em que suas citações estejam com a tag "<sup>"
-- Os artigos em que seu número de citações estão fora da tag "<sup>", seja dentre parênteses ou não, não estão extraindo.
-- A lista de nomes de autores correspondentes foi criada apenas para autores correpondentes que são iguais ao autor principal
+    - Extrair países, estados e regiões de autores correspondentes que não são iguais ao autor principal
+    - Tratar os dados acima para separar em 3 colunas, uma de países, uma de regiões e uma de estados
+    - Tipo de artigo de cada artigo

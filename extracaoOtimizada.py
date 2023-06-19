@@ -7,7 +7,9 @@ import PyPDF2
 start_time = time.time()
 
 # URL da página da Scielo
-URL = "https://www.scielo.br/j/anp/a/kxPBmT3bt67fjJycFQQ9fvf/?lang=en#"
+URL = "https://www.scielo.br/j/anp/a/4RHYpndvKwL63fGKDLMfb7c/?format=html&lang=pt"
+
+links = [URL, URL]
 
 # URL da página do PDF
 pdf_url = 'https://www.scielo.br/j/anp/a/kxPBmT3bt67fjJycFQQ9fvf/?format=pdf&lang=en'
@@ -80,14 +82,9 @@ def extraction():
         citacaoLista = soup.find_all('ul', class_='refList')
         for citacao in citacaoLista:
             tags_li = citacao.find_all('li')
+            num_citacoes = len(tags_li)
+        citacoes.append(num_citacoes)
 
-            if tags_li:
-                ultima_tag_li = tags_li[-1]
-                tag_sup = ultima_tag_li.find('sup')
-
-                if tag_sup:
-                    num_citacoes = int(tag_sup.text.strip())
-                    citacoes.append(num_citacoes)
 
         padrao_fasciculo = re.compile(r'\((.*?)\)')
         ano_conteudo = ano.split("•")[-1].strip()[-4:]
@@ -110,8 +107,8 @@ def extraction():
         print("Lista de fascículos:", fasciculos)
         print("Lista de títulos:", titulos)
         print("Lista de nomes de primeiro autor:", nomesPrimeiroAutor)
-        print("Lista de nomes de autor correspondente:", nomesCorrespondenteAutor)
         print("Lista de países de primeiro autor:", paisesPrimeiroAutor)
+        print("Lista de nomes de autor correspondente:", nomesCorrespondenteAutor)
         print("Lista de países de autor correspondente:", paisesCorrespondenteAutor)
         print("Lista de número de citações:", citacoes)
         print("Lista de número de páginas:", paginas)
