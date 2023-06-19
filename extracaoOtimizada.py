@@ -7,9 +7,7 @@ import PyPDF2
 start_time = time.time()
 
 # URL da página da Scielo
-URL = "https://www.scielo.br/j/anp/a/4RHYpndvKwL63fGKDLMfb7c/?format=html&lang=pt"
-
-links = [URL, URL]
+URL = "https://www.scielo.br/j/anp/a/LDDCM3Ggw5XfgDy4pmDBHcG/?lang=pt"
 
 # URL da página do PDF
 pdf_url = 'https://www.scielo.br/j/anp/a/kxPBmT3bt67fjJycFQQ9fvf/?format=pdf&lang=en'
@@ -44,11 +42,15 @@ def extraction():
         tituloIngles = soup.find('h1', class_='article-title').text.strip()
         tituloPortugues = soup.find('h2', class_='article-title').text.strip() if soup.find('h2', class_='article-title') else ''
 
-        autorPrincipal = soup.find('div', class_='tutors').find('strong').text.strip()
-        autorCorrespondente = autorPrincipal[-1]
+        # autorPrincipal = soup.find('div', class_='tutors').find('strong').text.strip()
+        # autorCorrespondente = autorPrincipal[-1]
 
         autoresDiv = soup.find('div', class_='tutors')
         autorCorrespondenteDiv = soup.find('ul', class_='footnote')
+
+        if(autoresDiv):
+            autorPrincipal = autoresDiv.find('strong').text.strip()
+            autorCorrespondente = autorPrincipal[-1]
 
         if autoresDiv:
             paisPrimeiroAutor = autoresDiv.get_text(separator=',')
@@ -80,11 +82,17 @@ def extraction():
                     paisesCorrespondenteAutor.append(paisPrimeiroAutor_conteudo)
 
         citacaoLista = soup.find_all('ul', class_='refList')
-        for citacao in citacaoLista:
-            tags_li = citacao.find_all('li')
-            num_citacoes = len(tags_li)
-        citacoes.append(num_citacoes)
-
+        citacaoListaAntiga = soup.find_all('article', id='articleText')
+        if(citacaoLista):
+            for citacao in citacaoLista:
+                tags_li = citacao.find_all('li')
+                num_citacoes = len(tags_li)
+            citacoes.append(num_citacoes)
+        elif(citacaoListaAntiga):
+            for citacao in citacaoListaAntiga:
+                tags_li = citacao.find_all('li')
+                num_li = len(tags_li)
+            citacoes.append(num_li)
 
         padrao_fasciculo = re.compile(r'\((.*?)\)')
         ano_conteudo = ano.split("•")[-1].strip()[-4:]
@@ -92,8 +100,10 @@ def extraction():
 
         anos.append(ano_conteudo)
         fasciculos.append(fasciculo_conteudo)
-        nomesPrimeiroAutor.append(autorPrincipal)
-        paisesPrimeiroAutor.append(paisPrimeiroAutor_conteudo)
+        if(autoresDiv):
+            nomesPrimeiroAutor.append(autorPrincipal)
+        if(autoresDiv):
+            paisesPrimeiroAutor.append(paisPrimeiroAutor_conteudo)
 
         if tituloPortugues == '':
             titulos.append(tituloIngles)
