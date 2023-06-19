@@ -13,6 +13,7 @@ start_time = time.time()
 # URL da página da Scielo
 URL = "https://www.scielo.br/j/anp/a/sXXvxXsxvhfV6QSwDTy36Wg/?lang=en#"
 
+# URL da página do PDF
 pdf = 'https://www.scielo.br/j/anp/a/PqWg3NpT7zQYBgf6qvwTmtq/?format=pdf&lang=pt'
 
 def extracao():
@@ -46,6 +47,7 @@ def extracao():
         autoresDiv = soup.find('div', class_='tutors')
         autorPrincipal = autoresDiv.find('strong')
         autorCorrespondenteDiv = soup.find('ul', class_='footnote')
+        autorCorrespondente = autorPrincipal[-1]
 
         # Extração de textos
         ano_conteudo = ano.text.strip()
@@ -53,6 +55,7 @@ def extracao():
         tituloIngles_conteudo = tituloIngles.text.strip()
         tituloPortugues_conteudo = tituloPortugues.text.strip()
         autorPrincipal_conteudo = autorPrincipal.text.strip()
+        autorCorrespondente_conteudo = autorCorrespondente.text.strip()
 
         if autoresDiv:
             # Extração do texto
@@ -89,7 +92,7 @@ def extracao():
             elif correspondencia:
                 texto_correspondencia = correspondencia[0]
             else:
-                texto_correspondencia = None
+                texto_correspondencia = autorCorrespondente_conteudo
 
             # Armazena o valor caso exista
             if texto_correspondencia:
