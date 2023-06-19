@@ -1,9 +1,19 @@
 from bs4 import BeautifulSoup
 import requests
 import re
+from io import BytesIO
+from pdfminer.pdfparser import PDFParser
+from pdfminer.pdfdocument import PDFDocument
+from pdfminer.pdfpage import PDFPage
+from pdfminer.pdfinterp import resolve1
+import time
+
+start_time = time.time()
 
 # URL da página da Scielo
 URL = "https://www.scielo.br/j/anp/a/sXXvxXsxvhfV6QSwDTy36Wg/?lang=en#"
+
+pdf = 'https://www.scielo.br/j/anp/a/PqWg3NpT7zQYBgf6qvwTmtq/?format=pdf&lang=pt'
 
 def extracao():
 
@@ -21,6 +31,7 @@ def extracao():
         fasciculos = []
         titulos = []
         citacoes = []
+        paginas = []
         nomesPrimeiroAutor = []
         nomesCorrespondenteAutor = []
         paisesPrimeiroAutor = []
@@ -137,6 +148,24 @@ def extracao():
         else:
             titulos.append(tituloPortugues_conteudo)
 
+        # Faz o download do arquivo PDF
+        response = requests.get(pdf)
+        file_data = response.content
+
+        # Cria um objeto BytesIO para representar o arquivo PDF em memória
+        pdf_file = BytesIO(file_data)
+
+        # Cria um objeto PDFParser para analisar o arquivo PDF
+        parser = PDFParser(pdf_file)
+
+        # Cria um objeto PDFDocument para representar o documento PDF
+        document = PDFDocument(parser)
+
+        # Obtém o número total de páginas
+        total_pages = resolve1(document.catalog['Pages'])['Count']
+
+        paginas.append(total_pages)
+
         print("Lista de anos:", anos)
         print("Lista de fascículos:", fasciculos)
         print("Lista de títulos:", titulos)
@@ -145,5 +174,14 @@ def extracao():
         print("Lista de países de primeiro autor:", paisesPrimeiroAutor)
         print("Lista de países de autor correspondente:", paisesCorrespondenteAutor)
         print("Lista de número de citações:", citacoes)
+        print("Lista de número de páginas:", paginas)
+        
+
 
 extracao()
+
+end_time = time.time()
+
+execution_time = end_time - start_time
+
+print(f'Tempo de execução: {execution_time}')
